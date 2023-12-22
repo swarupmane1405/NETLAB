@@ -1,0 +1,83 @@
+############# database
+CREATE TABLE UserInfo (
+    UserId INT PRIMARY KEY IDENTITY(1,1),
+    UserName NVARCHAR(50),
+    Email NVARCHAR(50)
+);
+
+################# stored sql
+CREATE PROCEDURE InsertUserInfo
+    @UserName NVARCHAR(50),
+    @Email NVARCHAR(50)
+AS
+BEGIN
+    INSERT INTO UserInfo (UserName, Email)
+    VALUES (@UserName, @Email);
+END;
+
+
+################################################# aspx
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="stored_procedure.Default" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+   <form id="form1" runat="server">
+        <div>
+            <asp:Label runat="server" ID="lblUserName" Text="User Name:"></asp:Label>
+            <asp:TextBox runat="server" ID="txtUserName"></asp:TextBox>
+            <br /><br />
+            <asp:Label runat="server" ID="lblEmail" Text="Email:"></asp:Label>
+            <asp:TextBox runat="server" ID="txtEmail"></asp:TextBox>
+            <br /><br />
+            <asp:Button runat="server" ID="btnSubmit" Text="Submit" OnClick="btnSubmit_Click" />
+        </div>
+    </form>
+</body>
+</html>
+
+
+######################################### cs
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace stored_procedure
+{
+    public partial class Default : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void btnSubmit_Click(object sender, EventArgs e)
+        {
+            string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=StoredP;Integrated Security=True;Encrypt=False";
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("InsertUserInfo", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UserName", txtUserName.Text);
+                    cmd.Parameters.AddWithValue("@Email", txtEmail.Text);
+
+                    connection.Open();
+                    cmd.ExecuteNonQuery();
+                }
+            }
+
+            Response.Write("Data inserted successfully!");
+        }
+    }
+}

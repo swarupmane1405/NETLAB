@@ -1,0 +1,71 @@
+############################### cs
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace sample
+{
+    public partial class sample : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                // Cookies: Increment the counter using cookies
+                if (Request.Cookies["CounterCookie"] != null)
+                {
+                    int counter = Convert.ToInt32(Request.Cookies["CounterCookie"].Value);
+                    counter++;
+                    Response.Cookies["CounterCookie"].Value = counter.ToString();
+                }
+                else
+                {
+                    int counter = 1;
+                    Response.Cookies["CounterCookie"].Value = counter.ToString();
+                }
+
+                lblCookieCounter.Text = "Cookie Counter: " + Request.Cookies["CounterCookie"].Value;
+
+                // Application State: Maintain a count of the total number of visits
+                if (Application["VisitCount"] == null)
+                {
+                    Application["VisitCount"] = 1;
+                }
+                else
+                {
+                    int visitCount = Convert.ToInt32(Application["VisitCount"]);
+                    visitCount++;
+                    Application["VisitCount"] = visitCount;
+                }
+
+                lblApplicationState.Text = "Total Visits (Application State): " + Application["VisitCount"];
+            }
+        }
+    }
+}
+########################## asxp
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="sample.aspx.cs" Inherits="sample.sample" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <h2>Cookie Counter</h2>
+            <asp:Label ID="lblCookieCounter" runat="server" Text=""></asp:Label>
+
+            <h2>Application State</h2>
+            <asp:Label ID="lblApplicationState" runat="server" Text=""></asp:Label>
+        </div>
+    </form>
+</body>
+</html>

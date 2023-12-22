@@ -1,0 +1,153 @@
+######################## aspx
+
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="index.aspx.cs" Inherits="exp.index" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <div>
+            <asp:Label ID="Label1" runat="server" Text="StudentID"></asp:Label>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:TextBox ID="studentid" runat="server"></asp:TextBox>
+            <br />
+            <br />
+            <asp:Label ID="Label2" runat="server" Text="FirstName :"></asp:Label>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:TextBox ID="fname" runat="server"></asp:TextBox>
+            <br />
+            <br />
+            <asp:Label ID="Label3" runat="server" Text="LastName :"></asp:Label>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:TextBox ID="lname" runat="server"></asp:TextBox>
+            <br />
+            <br />
+            <asp:Label ID="Label4" runat="server" Text="Age :"></asp:Label>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:TextBox ID="age1" runat="server"></asp:TextBox>
+            <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:Button ID="Button1" runat="server" Text="Submit" OnClick="Button1_Click" />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:Button ID="Button2" runat="server" OnClick="Button2_Click" Text="Refresh List" />
+            <br />
+&nbsp;&nbsp;&nbsp;
+            <asp:Label ID="success1" runat="server" Text=""  Style="color:palegreen"></asp:Label>
+            <br />
+&nbsp;&nbsp;&nbsp;
+            <asp:Label ID="error" runat="server" Text="" Style="color:red"></asp:Label>
+            <br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+
+
+         <div>
+            <h2>Student Database</h2>
+            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataKeyNames="StudentID" DataSourceID="SqlDataSource1">
+                <Columns>
+                    <asp:BoundField DataField="StudentID" HeaderText="StudentID" SortExpression="StudentID" ReadOnly="True" />
+                    <asp:BoundField DataField="FirstName" HeaderText="FirstName" SortExpression="FirstName" />
+                    <asp:BoundField DataField="LastName" HeaderText="LastName" SortExpression="LastName" />
+                    <asp:BoundField DataField="Age" HeaderText="Age" SortExpression="Age" />
+                </Columns>
+            </asp:GridView>
+            <asp:SqlDataSource ID="SqlDataSource1" runat="server" ConnectionString="Data Source=localhost\SQLEXPRESS;Initial Catalog=StudentDB;Integrated Security=True" SelectCommand="SELECT * FROM [Students]"></asp:SqlDataSource>
+        </div>
+    </form>
+</body>
+</html>
+
+
+################################## cs
+
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace exp
+{
+    public partial class index : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Retrieve values from the form controls
+                int studentID = Convert.ToInt32(studentid.Text);
+                string firstName = fname.Text;
+                string lastName = lname.Text;
+                int age = Convert.ToInt32(age1.Text);
+
+                // Assuming you have a database connection string in the configuration
+                string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=StudentDB1;Integrated Security=True";
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    // Open the database connection
+                    connection.Open();
+
+                    // Example: Inserting data into the Students table
+                    string insertQuery = "INSERT INTO Students ( FirstName, LastName, Age) " +
+                                         "VALUES ( @firstName, @lastName, @age)";
+
+                    using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                    {
+                        // Add parameters to the SQL command
+                       ;
+                        command.Parameters.AddWithValue("@firstName", firstName);
+                        command.Parameters.AddWithValue("@lastName", lastName);
+                        command.Parameters.AddWithValue("@age", age);
+
+                        // Execute the SQL command
+                        command.ExecuteNonQuery();
+                    }
+
+                    // Close the database connection
+                    connection.Close();
+
+                    // You can add any additional logic or messages here
+                    success1.Text = "Inserted Succesful";
+
+
+                    // For example, display success message
+                    // Response.Write("Data added successfully!");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception, you can display an error message or log it
+                // For example, display an error message
+                Response.Write("Error: " + ex.Message);
+            }
+        }
+
+        protected void Button2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                GridView1.DataBind();
+            }
+            catch (Exception c)
+            {
+                Response.Write(c.Message);
+            }
+
+
+        }
+    }
+}

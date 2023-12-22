@@ -1,0 +1,119 @@
+########################## cs
+
+using System;
+using System.Collections.Generic;
+using System.Data.SqlClient;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace Student_exp
+{
+    public partial class WebForm : System.Web.UI.Page
+    {
+        protected void Page_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        protected void Unnamed1_Click(object sender, EventArgs e)
+        {
+            string firstName = txtFirstName.Text;
+            string lastName = txtLastName.Text;
+            int age = int.Parse(txtAge.Text);
+
+            string connectionString = "Data Source=.\\sqlexpress;Initial Catalog=StudentDB1;Integrated Security=True;Encrypt=False";
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    string query = "INSERT INTO Students(FirstName,LastName,Age)" + " VALUES (@firstName,@lastName,@age)";
+
+                    using(SqlCommand command = new SqlCommand(query,connection))
+                    {
+                        command.Parameters.AddWithValue("@firstName", firstName);
+                        command.Parameters.AddWithValue("@lastName", lastName);
+                        command.Parameters.AddWithValue("@age", age);
+                        command.ExecuteNonQuery();  
+                    }
+                }
+
+            }catch (Exception ex)
+            {
+                label1.Text = ex.Message;
+            }
+        }
+    }
+}
+
+################################## aspx
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="WebForm.aspx.cs" Inherits="Student_exp.WebForm" %>
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title></title>
+   <style>
+       *{
+           padding: 2px;
+       }
+   </style>
+</head>
+<body>
+     <form id="form1" runat="server">
+        <div>
+            <h2>Student Information</h2>
+            <table>
+    <tr>
+        <td>
+            <label for="txtFirstName">First Name:</label>
+        </td>
+        <td>
+            <asp:TextBox ID="txtFirstName" runat="server" placeholder="Enter first name"></asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="txtLastName">Last Name:</label>
+        </td>
+        <td>
+            <asp:TextBox ID="txtLastName" runat="server" placeholder="Enter last name"></asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <label for="txtAge">Age:</label>
+        </td>
+        <td>
+            <asp:TextBox ID="txtAge" runat="server" placeholder="Enter age"></asp:TextBox>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <asp:Button runat="server" Text="Button" OnClick="Unnamed1_Click"></asp:Button>
+           
+        </td>
+    </tr>
+                <tr>
+                    <td>
+                        <asp:Label runat="server" Text="Label" ID="label1"></asp:Label>
+
+                    </td>
+                </tr>
+</table>
+
+
+            <h2>Student Data</h2>
+            
+            <asp:GridView ID="GridView1" runat="server" AutoGenerateColumns="False" DataSourceID="SqlDataSource1"></asp:GridView>
+            <asp:SqlDataSource runat="server" ID="SqlDataSource1"></asp:SqlDataSource>
+           
+
+        </div>
+    </form>
+</body>
+</html>
